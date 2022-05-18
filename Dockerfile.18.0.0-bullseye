@@ -5,10 +5,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
     groupadd -g 1000 node; \
-    useradd -M -d /var/lib/node -s /bin/bash -g 1000 -u 1000 node; \
-    mkdir -p /var/lib/node; \
-    chown node:node /var/lib/node; \
-    chmod 750 /var/lib/node
+    useradd -M -d /home/node -s /bin/bash -g 1000 -u 1000 node; \
+    mkdir -p /home/node; \
+    chown node:node /home/node; \
+    chmod 750 /home/node
 
 RUN set -eux; \
     # Node.js APT

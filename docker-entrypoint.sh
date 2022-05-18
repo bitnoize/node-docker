@@ -11,7 +11,7 @@ if [ "$(id -u)" = "0" ]; then
     groupmod -g "$GID" node
   fi
 
-  chown -R node:node /var/lib/node
+  chown -R node:node /home/node
 
   exec gosu node "$@"
 else
