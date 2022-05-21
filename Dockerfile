@@ -2,7 +2,7 @@
 FROM bitnoize/debian-backports:bullseye
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=18
+ARG NODE_RELEASE=18
 
 RUN set -eux; \
     groupadd -g 1000 node; \
@@ -18,7 +18,7 @@ RUN set -eux; \
     echo "Pin-Priority: 1000"         >> /etc/apt/preferences.d/20nodesource; \
     wget -q -O- "http://deb.nodesource.com/gpgkey/nodesource.gpg.key" | \
         gpg --dearmor > /usr/share/keyrings/nodesource-archive-keyring.gpg; \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bullseye main" > \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_RELEASE}.x bullseye main" > \
         /etc/apt/sources.list.d/nodesource.list; \
     # Yarn APT
     echo "Package: *"           >> /etc/apt/preferences.d/30yarn; \
