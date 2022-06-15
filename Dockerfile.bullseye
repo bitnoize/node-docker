@@ -5,13 +5,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_REPOSITORY=node_18.x
 
 RUN set -eux; \
+    # Fake user
     groupadd -g 1000 node; \
     useradd -M -d /home/node -s /bin/bash -g 1000 -u 1000 node; \
+    usermod -a -G staff node; \
     mkdir -p /home/node; \
     chown node:node /home/node; \
-    chmod 750 /home/node
-
-RUN set -eux; \
+    chmod 750 /home/node; \
     # Node.js APT
     echo "Package: *"                 >> /etc/apt/preferences.d/20nodesource; \
     echo "Pin: release o=Node Source" >> /etc/apt/preferences.d/20nodesource; \
