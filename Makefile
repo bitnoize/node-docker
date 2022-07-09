@@ -1,12 +1,12 @@
 
 IMAGENAME="bitnoize/node"
 
-.PHONY: help build push shell
+.PHONY: help build push pull shell
 
 .DEFAULT_GOAL := help
 
 help:
-	@echo "Makefile commands: build push shell"
+	@echo "Makefile commands: build push pull shell"
 
 build: .build-18-bullseye .build-16-bullseye
 
@@ -32,6 +32,15 @@ push: .push-18-bullseye .push-16-bullseye
 
 .push-16-bullseye:
 	docker push "$(IMAGENAME):16-bullseye"
+
+pull: .pull-18-bullseye .pull-16-bullseye
+
+.pull-18-bullseye:
+	docker pull "$(IMAGENAME):18-bullseye"
+	docker pull "$(IMAGENAME):latest"
+
+.pull-16-bullseye:
+	docker pull "$(IMAGENAME):16-bullseye"
 
 shell:
 	docker run -it --rm \
