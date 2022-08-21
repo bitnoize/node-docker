@@ -1,50 +1,40 @@
 
-IMAGENAME="bitnoize/node"
+IMAGENAME := bitnoize/node
 
-.PHONY: help build push pull shell
+.PHONY: help build rebuild
 
 .DEFAULT_GOAL := help
 
 help:
-	@echo "Makefile commands: build push pull shell"
+	@echo "Makefile commands: build rebuild"
 
-build: .build-18-bullseye .build-16-bullseye
+#build: export BUILD_OPTS := ...
+#build: export PUSH_OPTS := ...
+build: .build-18-bullseye .build-16-bullseye .push-18-bullseye .push-16-bullseye
+
+rebuild: export BUILD_OPTS := --pull --no-cache
+#rebuild: export PUSH_OPTS := ...
+rebuild: .build-18-bullseye .build-16-bullseye .push-18-bullseye .push-16-bullseye
 
 .build-18-bullseye:
-	docker build --pull --no-cache \
-		--build-arg NODE_REPOSITORY=node_18.x \
+	docker build $(BUILD_OPTS) \
+		--build-arg NODE_VERSION=18 \
 		-t "$(IMAGENAME):18-bullseye" \
 		-t "$(IMAGENAME):latest" \
 		-f Dockerfile.bullseye \
 		.
 
 .build-16-bullseye:
-	docker build --pull --no-cache \
-		--build-arg NODE_REPOSITORY=node_16.x \
+	docker build $(BUILD_OPTS) \
+		--build-arg NODE_VERSION=16 \
 		-t "$(IMAGENAME):16-bullseye" \
+		-f Dockerfile.bullseye \
 		.
 
-push: .push-18-bullseye .push-16-bullseye
-
 .push-18-bullseye:
-	docker push "$(IMAGENAME):18-bullseye"
-	docker push "$(IMAGENAME):latest"
+	docker push $(PUSH_OPTS) "$(IMAGENAME):18-bullseye"
+	docker push $(PUSH_OPTS) "$(IMAGENAME):latest"
 
 .push-16-bullseye:
-	docker push "$(IMAGENAME):16-bullseye"
-
-pull: .pull-18-bullseye .pull-16-bullseye
-
-.pull-18-bullseye:
-	docker pull "$(IMAGENAME):18-bullseye"
-	docker pull "$(IMAGENAME):latest"
-
-.pull-16-bullseye:
-	docker pull "$(IMAGENAME):16-bullseye"
-
-shell:
-	docker run -it --rm \
-		--name node-shell \
-		bitnoize/node:latest \
-		/bin/bash
+	docker push $(PUSH_OPTS) "$(IMAGENAME):16-bullseye"
 
