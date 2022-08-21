@@ -1,20 +1,18 @@
 
 IMAGENAME := bitnoize/node
 
-.PHONY: help build rebuild
+.PHONY: help build rebuild push pull
 
 .DEFAULT_GOAL := help
 
 help:
-	@echo "Makefile commands: build rebuild"
+	@echo "Makefile commands: build rebuild push pull"
 
 #build: export BUILD_OPTS := ...
-#build: export PUSH_OPTS := ...
-build: .build-18-bullseye .build-16-bullseye .push-18-bullseye .push-16-bullseye
+build: .build-18-bullseye .build-16-bullseye
 
 rebuild: export BUILD_OPTS := --pull --no-cache
-#rebuild: export PUSH_OPTS := ...
-rebuild: .build-18-bullseye .build-16-bullseye .push-18-bullseye .push-16-bullseye
+rebuild: .build-18-bullseye .build-16-bullseye
 
 .build-18-bullseye:
 	docker build $(BUILD_OPTS) \
@@ -31,10 +29,23 @@ rebuild: .build-18-bullseye .build-16-bullseye .push-18-bullseye .push-16-bullse
 		-f Dockerfile.bullseye \
 		.
 
+#push: export PUSH_OPTS := ...
+push: .push-18-bullseye .push-16-bullseye
+
 .push-18-bullseye:
 	docker push $(PUSH_OPTS) "$(IMAGENAME):18-bullseye"
 	docker push $(PUSH_OPTS) "$(IMAGENAME):latest"
 
 .push-16-bullseye:
 	docker push $(PUSH_OPTS) "$(IMAGENAME):16-bullseye"
+
+#pull: export PULL_OPTS := ...
+pull: .pull-18-bullseye .pull-16-bullseye
+
+.pull-18-bullseye:
+	docker pull $(PULL_OPTS) "$(IMAGENAME):18-bullseye"
+	docker pull $(PULL_OPTS) "$(IMAGENAME):latest"
+
+.pull-16-bullseye:
+	docker pull $(PULL_OPTS) "$(IMAGENAME):16-bullseye"
 
