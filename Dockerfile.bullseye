@@ -5,15 +5,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=18
 
 RUN set -eux; \
-    # Fake user
-    groupadd -g 1000 node; \
-    useradd -M -d /home/node -s /bin/bash -g 1000 -u 1000 node; \
-    usermod -a -G staff node; \
-    mkdir -p /home/node; \
-    chown node:node /home/node; \
-    chmod 750 /home/node
-
-RUN set -eux; \
     # Node.js APT
     echo "Package: *"                 >> /etc/apt/preferences.d/20nodesource; \
     echo "Pin: release o=Node Source" >> /etc/apt/preferences.d/20nodesource; \
@@ -33,16 +24,13 @@ RUN set -eux; \
     # Debian packages
     apt-get update -q; \
     apt-get install -yq \
-        gosu build-essential git nodejs yarn; \
+        build-essential git nodejs yarn; \
     # Clean-up
 	  rm -rf /var/lib/apt/lists/*; \
     # Smoke tests
     node --version; \
     npm --version; \
     yarn --version
-
-COPY docker-entrypoint.sh /sbin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
 
 CMD ["node"]
 
