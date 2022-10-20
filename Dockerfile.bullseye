@@ -1,32 +1,54 @@
 
-FROM bitnoize/debian:bullseye
+FROM ghcr.io/bitnoize/debian:bullseye
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=18
+ARG NODE_VERSION=19
+
+RUN set -eux; \
+    # Unprivileged user
+    groupadd -g 1000 node; \
+    useradd -M -d /var/lib/node -s /bin/bash -g 1000 -u 1000 node; \
+    usermod -a -G tty,staff node; \
+    mkdir -m 0750 /var/lib/node; \
+    chown node:node /var/lib/node
+
+COPY docker-entrypoint.sh /sbin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
 
 RUN set -eux; \
     # Node.js APT
-    echo "Package: *"                 >> /etc/apt/preferences.d/20nodesource; \
-    echo "Pin: release o=Node Source" >> /etc/apt/preferences.d/20nodesource; \
-    echo "Pin-Priority: 1000"         >> /etc/apt/preferences.d/20nodesource; \
     wget -q -O- "http://deb.nodesource.com/gpgkey/nodesource.gpg.key" | \
-        gpg --dearmor > /usr/share/keyrings/nodesource-archive-keyring.gpg; \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bullseye main" > \
-        /etc/apt/sources.list.d/nodesource.list; \
+        gpg --dearmor > /usr/share/keyrings/nodesource.gpg; \
+    { \
+        echo "Package: *"; \
+        echo "Pin: release o=Node Source"; \
+        echo "Pin-Priority: 1000"; \
+    } | tee /etc/apt/preferences.d/20nodesource; \
+    { \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bullseye main"; \
+    } | tee /etc/apt/sources.list.d/nodesource.list; \
     # Yarn APT
-    echo "Package: *"           >> /etc/apt/preferences.d/30yarn; \
-    echo "Pin: release o=yarn"  >> /etc/apt/preferences.d/30yarn; \
-    echo "Pin-Priority: 1000"   >> /etc/apt/preferences.d/30yarn; \
     wget -q -O- "http://dl.yarnpkg.com/debian/pubkey.gpg" | \
-        gpg --dearmor > /usr/share/keyrings/yarn-archive-keyring.gpg; \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main" > \
-        /etc/apt/sources.list.d/yarn.list; \
+        gpg --dearmor > /usr/share/keyrings/yarn.gpg; \
+    { \
+        echo "Package: *"; \
+        echo "Pin: release o=yarn"; \
+        echo "Pin-Priority: 1000"; \
+    } | tee /etc/apt/preferences.d/30yarn; \
+    { \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main"; \
+    } | tee /etc/apt/sources.list.d/yarn.list; \
     # Debian packages
     apt-get update -q; \
     apt-get install -yq \
         build-essential git nodejs yarn; \
     # Clean-up
-	  rm -rf /var/lib/apt/lists/*; \
+    rm -rf \
+        /var/www/* \
+        /usr/share/doc/* \
+        /usr/share/info/* \
+        /usr/share/man/* \
+        /var/lib/apt/lists/*; \
     # Smoke tests
     node --version; \
     npm --version; \
