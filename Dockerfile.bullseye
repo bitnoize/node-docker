@@ -1,6 +1,8 @@
 
 FROM ghcr.io/bitnoize/debian:bullseye
 
+LABEL org.opencontainers.image.source=https://github.com/bitnoize/node-docker
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=19
 
