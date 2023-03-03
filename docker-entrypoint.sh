@@ -11,7 +11,7 @@ if [ "$(id -u)" = "0" ]; then
     groupmod -g "$GID" node
   fi
 
-  chown node:node /var/lib/node \
+  chown node:node /var/lib/node
 
   if [ -d "/lib/entrypoint" ]; then
     run-parts -v --regex '.*sh$' /lib/entrypoint
