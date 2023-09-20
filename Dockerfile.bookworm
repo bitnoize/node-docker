@@ -1,11 +1,11 @@
 
-FROM ghcr.io/bitnoize/debian:bullseye
+FROM ghcr.io/bitnoize/debian:bookworm
 
 LABEL org.opencontainers.image.source=https://github.com/bitnoize/node-docker
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG NODE_VERSION=19
+ARG NODE_VERSION=20
 ENV NODE_VERSION=${NODE_VERSION}
 
 RUN set -eux; \
@@ -29,26 +29,14 @@ RUN set -eux; \
         echo "Pin-Priority: 1000"; \
     } | tee /etc/apt/preferences.d/20nodesource; \
     { \
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bullseye main"; \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bookworm main"; \
     } | tee /etc/apt/sources.list.d/nodesource.list; \
-    # Yarn APT
-    wget -q -O- "http://dl.yarnpkg.com/debian/pubkey.gpg" | \
-        gpg --dearmor > /usr/share/keyrings/yarnpkg-archive-keyring.gpg; \
-    { \
-        echo "Package: *"; \
-        echo "Pin: release o=yarn"; \
-        echo "Pin-Priority: 1000"; \
-    } | tee /etc/apt/preferences.d/30yarnpkg; \
-    { \
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/yarnpkg-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main"; \
-    } | tee /etc/apt/sources.list.d/yarnpkg.list; \
     # Debian packages
     apt-get update -q; \
     apt-get install -yq \
         build-essential \
         git \
-        nodejs \
-        yarn; \
+        nodejs; \
     # Clean-up
     rm -rf \
         /var/www/* \
@@ -58,8 +46,7 @@ RUN set -eux; \
         /var/lib/apt/lists/*; \
     # Smoke tests
     node --version; \
-    npm --version; \
-    yarn --version
+    npm --version;
 
 CMD ["node"]
 

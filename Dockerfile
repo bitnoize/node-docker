@@ -1,1 +1,1 @@
-Dockerfile.bullseye
+Dockerfile.bookworm
