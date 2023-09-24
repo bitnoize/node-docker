@@ -58,8 +58,8 @@ RUN set -eux; \
         /var/lib/apt/lists/*; \
     # Smoke tests
     node --version; \
-    npm --version \
-    yarn --version;
+    npm --version; \
+    yarn --version
 
-CMD ["node"]
+CMD ["/bin/bash"]
 
