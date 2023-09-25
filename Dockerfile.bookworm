@@ -22,25 +22,25 @@ ENTRYPOINT ["entrypoint.sh"]
 RUN set -eux; \
     # Node.js APT
     wget -q -O- "http://deb.nodesource.com/gpgkey/nodesource.gpg.key" | \
-        gpg --dearmor > /usr/share/keyrings/nodesource-archive-keyring.gpg; \
+        gpg --dearmor > /etc/apt/keyrings/nodesource.gpg; \
     { \
         echo "Package: *"; \
         echo "Pin: release o=Node Source"; \
         echo "Pin-Priority: 1000"; \
     } | tee /etc/apt/preferences.d/20nodesource; \
     { \
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource-archive-keyring.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bookworm main"; \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/nodesource.gpg] http://deb.nodesource.com/node_${NODE_VERSION}.x bookworm main"; \
     } | tee /etc/apt/sources.list.d/nodesource.list; \
     # Yarn APT
     wget -q -O- "http://dl.yarnpkg.com/debian/pubkey.gpg" | \
-        gpg --dearmor > /usr/share/keyrings/yarnpkg-archive-keyring.gpg; \
+        gpg --dearmor > /etc/apt/keyrings/yarnpkg.gpg; \
     { \
         echo "Package: *"; \
         echo "Pin: release o=yarn"; \
         echo "Pin-Priority: 1000"; \
     } | tee /etc/apt/preferences.d/30yarnpkg; \
     { \
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/yarnpkg-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main"; \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/yarnpkg.gpg] https://dl.yarnpkg.com/debian stable main"; \
     } | tee /etc/apt/sources.list.d/yarnpkg.list; \
     # Debian packages
     apt-get update -q; \
