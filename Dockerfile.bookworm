@@ -61,5 +61,5 @@ RUN set -eux; \
     npm --version; \
     yarn --version
 
-CMD ["/bin/bash"]
+CMD ["/usr/bin/node"]
 
